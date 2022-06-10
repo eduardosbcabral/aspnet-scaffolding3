@@ -4,6 +4,7 @@ using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Framing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,53 +26,50 @@ namespace AspNetScaffolding.Extensions.Queue
         public void AddRetryMessage(string message, int retryCount, string requestKey)
         {
             var buffer = Encoding.UTF8.GetBytes(message);
+            var basicProperties = this.Channel.CreateBasicProperties();
+            basicProperties.Headers = new Dictionary<string, object>
+            {
+                { "retry_count", retryCount },
+                { "request_key", requestKey }
+            };
+            basicProperties.Persistent = true;
+            basicProperties.Expiration = this.QueueSettings.GetCalculedRetryTTL(retryCount).ToString();
             this.Channel.BasicPublish(
                 exchange: "",
                 routingKey: $"{this.QueueSettings.QueueName}-retry",
-                basicProperties: new BasicProperties
-                {
-                    Persistent = true,
-                    Headers = new Dictionary<string, object>
-                    {
-                        { "retry_count", retryCount },
-                        { "request_key", requestKey }
-                    },
-                    Expiration = this.QueueSettings.GetCalculedRetryTTL(retryCount).ToString()
-                },
+                basicProperties: basicProperties,
                 body: buffer);
         }
 
         public void AddDeadMessage(string message, string requestKey)
         {
             var buffer = Encoding.UTF8.GetBytes(message);
+            var basicProperties = this.Channel.CreateBasicProperties();
+            basicProperties.Headers = new Dictionary<string, object>
+            {
+                { "request_key", requestKey }
+            };
+            basicProperties.Persistent = true;
             this.Channel.BasicPublish(
                 exchange: "",
                 routingKey: $"{this.QueueSettings.QueueName}-dead",
-                basicProperties: new BasicProperties
-                {
-                    Persistent = true,
-                    Headers = new Dictionary<string, object>
-                    {
-                        { "request_key", requestKey }
-                    }
-                },
+                basicProperties: basicProperties,
                 body: buffer);
         }
 
         public void AddMessage(string message, string requestKey)
         {
             var buffer = Encoding.UTF8.GetBytes(message);
+            var basicProperties = this.Channel.CreateBasicProperties();
+            basicProperties.Headers = new Dictionary<string, object>
+            {
+                { "request_key", requestKey }
+            };
+            basicProperties.Persistent = true;
             this.Channel.BasicPublish(
                 exchange: "",
                 routingKey: this.QueueSettings.QueueName,
-                basicProperties: new BasicProperties
-                {
-                    Persistent = true,
-                    Headers = new Dictionary<string, object>
-                    {
-                        { "request_key", requestKey }
-                    }
-                },
+                basicProperties: basicProperties,
                 body: buffer);
         }
 
@@ -202,7 +200,7 @@ namespace AspNetScaffolding.Extensions.Queue
 
             int retryCount = retryCountHeader != null ? (int)retryCountHeader : 0;
 
-            var message = Encoding.UTF8.GetString(eventArgs.Body);
+            var message = Encoding.UTF8.GetString(eventArgs.Body.ToArray());
 
             await this.ReceiveMessage?.Invoke(message, retryCount, eventArgs.DeliveryTag, requestKey);
         }

@@ -35,7 +35,7 @@ namespace AspNetScaffolding.Extensions.Worker
         {
             StaticSimpleLogger.Info("WorkerRunner", nameof(Stop), "Worker stopped!");
             Thread.Sleep(2000);
-            this.CurrentThread.Abort();
+            this.CurrentThread.Interrupt();
         }
 
         protected void InitFunction(Func<string, int, ulong, string, Task<bool>> func)

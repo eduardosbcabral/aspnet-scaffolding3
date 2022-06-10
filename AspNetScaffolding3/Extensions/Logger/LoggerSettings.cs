@@ -8,22 +8,6 @@ namespace AspNetScaffolding.Extensions.Logger
     {
         public string TitlePrefix { get; set; }
 
-        /// <summary>
-        /// Previously JsonBlacklistRequest
-        /// </summary>
-        [Obsolete]
-        public string[] JsonBlacklist { get; set; }
-
-        public string[] GetJsonBlacklistRequest()
-        {
-            if (this.JsonBlacklistRequest?.Any() == true)
-            {
-                return this.JsonBlacklistRequest;
-            }
-
-            return this.JsonBlacklist;
-        }
-
         public string[] JsonBlacklistRequest { get; set; }
 
         public string[] JsonBlacklistResponse { get; set; }

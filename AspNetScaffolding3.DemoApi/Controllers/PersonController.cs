@@ -2,7 +2,6 @@
 using AspNetScaffolding.Extensions.Cache;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using Mundipagg;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -18,7 +17,7 @@ namespace AspNetScaffolding.Controllers
 
         private ILocker Locker { get; set; }
 
-        public PersonController(IDistributedCache cache, ILocker locker, IMundipaggApiClient client)
+        public PersonController(IDistributedCache cache, ILocker locker)
         {
             this.Locker = locker;
             this.DistributedCache = cache;
@@ -39,8 +38,6 @@ namespace AspNetScaffolding.Controllers
                 Email = "john.doe@email.com",
                 Type = PersonType.PhysicalPerson
             };
-
-            return Ok(person);
 
             var options = new DistributedCacheEntryOptions
             {

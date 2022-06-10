@@ -45,7 +45,7 @@ namespace AspNetScaffolding.Extensions.Logger
                 Version = Api.ApiSettings.BuildVersion,
                 InformationTitle = settings?.TitlePrefix + CommunicationLogger.DefaultInformationTitle,
                 ErrorTitle = settings?.TitlePrefix + CommunicationLogger.DefaultErrorTitle,
-                BlacklistRequest = settings?.GetJsonBlacklistRequest(),
+                BlacklistRequest = settings?.JsonBlacklistRequest,
                 BlacklistResponse = settings?.JsonBlacklistResponse,
                 RequestKeyProperty = RequestKeyServiceExtension.RequestKeyHeaderName,
                 AccountIdProperty = AccountIdServiceExtension.AccountIdHeaderName,
